@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import { OAuth2Client } from 'google-auth-library'; // Import Google OAuth2 Client
 import { ApiResponse } from '../middleware/ApiResponse.js'; // Assuming this is in your middleware folder
 import { UserModel } from '../models/user.model.js'; // Make sure this path is correct
+import { sendNotification } from '../firebase/admin.js';
 
 dotenv.config();
 
@@ -21,7 +22,10 @@ const generateToken = (userId: string, secret: string, expiresIn: string) => {
 // Google Login
 const googleLogin = async (req: Request, res: Response) => {
   const { token } = req.body;
+  
 
+  console.log('Received token:', token);
+  console.log('GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID);
   try {
     // Google OAuth2 token verification logic
     const ticket = await googleClient.verifyIdToken({
@@ -42,7 +46,28 @@ const googleLogin = async (req: Request, res: Response) => {
       path: process.env.COOKIE_PATH!,
     });
 
+
+    
+ 
+
     res.status(200).json(new ApiResponse(200, { accessToken, refreshToken }, 'Login successful'));
+
+   const notificationPayload = {
+  title: "Google Login",
+  body: "Google login successful",
+  imageUrl: "https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg",
+  url: "http://localhost:5173/",
+};
+
+try {
+  const result = await sendNotification(notificationPayload);
+  console.log("Send result:", result);
+} catch (error) {
+  // ...
+}
+
+
+
   } catch (error) {
     console.error('Google login error:', error);
     res.status(500).json(new ApiResponse(500, null, 'Google login failed'));

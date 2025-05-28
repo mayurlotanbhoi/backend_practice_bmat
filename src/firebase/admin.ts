@@ -19,6 +19,7 @@ export const sendNotification = async (payload: {
   imageUrl?: string;
   url?: string;
 }) => {
+  console.log('Sending notification:', payload);
   if (!tokens.length) {
     throw new Error('No FCM tokens available');
   }
