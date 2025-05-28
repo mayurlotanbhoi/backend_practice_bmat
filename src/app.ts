@@ -7,12 +7,12 @@ import notificationRoutes from './routes/notifications.js';
 // import serviceAccount from "./firebase/serviceAccountKey.json" with { type: "json" };
 import { errorHandler } from "./middleware/errorHandler.js";
 
-// Load environment variables from the .env file
+
 
 
 const app = express();
 app.use(bodyParser.json());
-app.use(cors())
+app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 dotenv.config();
 
 

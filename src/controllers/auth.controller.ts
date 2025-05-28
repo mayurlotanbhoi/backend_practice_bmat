@@ -46,10 +46,6 @@ const googleLogin = async (req: Request, res: Response) => {
       path: process.env.COOKIE_PATH!,
     });
 
-
-    
- 
-
     res.status(200).json(new ApiResponse(200, { accessToken, refreshToken }, 'Login successful'));
 
    const notificationPayload = {
@@ -63,7 +59,7 @@ try {
   const result = await sendNotification(notificationPayload);
   console.log("Send result:", result);
 } catch (error) {
-  // ...
+  console.error("Error sending notification:", error);
 }
 
 
@@ -125,6 +121,39 @@ const login = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json(new ApiResponse(500, null, 'Login failed'));
+  }
+};
+
+export const refreshAccessToken = async (req: Request, res: Response) => {
+  const refreshToken = req.cookies[process.env.COOKIE_NAME!];
+
+  if (!refreshToken) {
+    return res.status(401).json(new ApiResponse(401, null, 'Refresh token missing'));
+  }
+
+  try {
+    // 1. Verify refresh token
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!) as { uid: string };
+
+    // 2. Find user and validate token matches DB
+    const user = await UserModel.findById(decoded.uid);
+    if (!user || user.refreshToken !== refreshToken) {
+      return res.status(403).json(new ApiResponse(403, null, 'Invalid refresh token'));
+    }
+
+    // 3. Generate new access token
+    const newAccessToken = generateToken(
+      user.uid,
+      process.env.JWT_SECRET!,
+      process.env.JWT_ACCESS_EXPIRATION!
+    );
+
+    return res.status(200).json(
+      new ApiResponse(200, { accessToken: newAccessToken }, 'Access token refreshed')
+    );
+  } catch (err) {
+    console.error('Refresh token error:', err);
+    return res.status(403).json(new ApiResponse(403, null, 'Token verification failed'));
   }
 };
 
