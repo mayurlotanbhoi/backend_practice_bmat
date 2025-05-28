@@ -7,6 +7,7 @@ interface IUser extends Document {
   email: string;
   password: string;
   uid: string;
+  refreshToken: string;
   comparePassword(password: string): Promise<boolean>;
 }
 
@@ -62,6 +63,7 @@ userSchema.statics.createUser = async function (email: string, password: string)
     password,
     uid: new mongoose.Types.ObjectId().toString(),
   });
+  console.log(user);
   await user.save();
   return user;
 };
@@ -70,6 +72,9 @@ userSchema.statics.createUser = async function (email: string, password: string)
 userSchema.statics.validatePassword = async function (storedPassword: string, inputPassword: string) {
   return bcrypt.compare(inputPassword, storedPassword);
 };
+
+
+
 
 // Create the model
 const UserModel = mongoose.model<IUser, IUserModel>('User', userSchema);
