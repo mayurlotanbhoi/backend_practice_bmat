@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 import { OAuth2Client } from 'google-auth-library'; // Import Google OAuth2 Client
 import { ApiResponse } from '../middleware/ApiResponse.js'; // Assuming this is in your middleware folder
 import { UserModel } from '../models/user.model.js'; // Make sure this path is correct
-import { sendNotification } from '../firebase/admin.js';
+// import { sendNotification } from '../firebase/admin.js';
 
 dotenv.config();
 
@@ -55,12 +55,12 @@ const googleLogin = async (req: Request, res: Response) => {
   url: "http://localhost:5173/",
 };
 
-try {
-  const result = await sendNotification(notificationPayload);
-  console.log("Send result:", result);
-} catch (error) {
-  console.error("Error sending notification:", error);
-}
+// try {
+//   const result = await sendNotification(notificationPayload);
+//   console.log("Send result:", result);
+// } catch (error) {
+//   console.error("Error sending notification:", error);
+// }
 
 
 
