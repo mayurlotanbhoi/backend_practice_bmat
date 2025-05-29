@@ -12,17 +12,13 @@ import { errorHandler } from "./middleware/errorHandler.js";
 
 const app = express();
 app.use(bodyParser.json());
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+app.use(cors({ origin: ['https://vermillion-gaufre-a3e944.netlify.app','http://localhost:5173'], credentials: true }));
 dotenv.config();
 
 
 
 
-const serviceAccount = {
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-  privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-};
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON!);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
