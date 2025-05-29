@@ -23,12 +23,17 @@ const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON!);
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Optional: shut down server gracefully
+  process.exit(1);
+});
 
 import { router as authRoutes } from './routes/auth.routes.js';
 
 
-app.use(notificationRoutes);
-app.use('/auth', authRoutes);
+app.use('/api/v1/', notificationRoutes);
+app.use('/api/v1/auth', authRoutes);
 
 
 
